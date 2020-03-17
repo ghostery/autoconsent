@@ -1,6 +1,7 @@
 import Tab from './web/tab';
 import handleContentMessage from './web/content';
 import { rules } from './index';
+import { Browser } from './types';
 
 export * from './index';
 export {
@@ -23,6 +24,11 @@ async function detectDialog(tab, retries) {
 }
 
 class TabConsent {
+  tab: any
+  url: string
+  checked: Promise<any>
+  rule: any
+
   constructor(tab, url, ruleCheckPromise) {
     this.tab = tab;
     this.url = url;
@@ -66,21 +72,24 @@ class TabConsent {
 }
 
 export default class AutoConsent {
+  consentFrames: Map<number, any> = new Map()
+  tabCmps: Map<number, TabConsent> = new Map()
+  sendContentMessage: () => any
+  browser: Browser
+
   constructor(sendContentMessage) {
-    this.consentFrames = new Map();
-    this.tabCmps = new Map();
     this.sendContentMessage = sendContentMessage;
   }
 
-  createTab(tabId, url) {
+  createTab(tabId: number, url: string) {
     return new Tab(tabId,
       url,
       this.consentFrames.get(tabId),
       this.sendContentMessage);
   }
 
-  async checkTab(tabId) {
-    const tabInfo = await browser.tabs.get(tabId);
+  async checkTab(tabId: number) {
+    const tabInfo = await this.browser.tabs.get(tabId);
     const pageUrl = new URL(tabInfo.url);
     if (!this.tabCmps.has(tabId) || this.tabCmps.get(tabId).url !== pageUrl.href) {
       const tab = this.createTab(tabId, pageUrl.href);
@@ -100,7 +109,7 @@ export default class AutoConsent {
     return this.tabCmps.get(tabId);
   }
 
-  removeTab(tabId) {
+  removeTab(tabId: number) {
     this.tabCmps.delete(tabId);
   }
 
