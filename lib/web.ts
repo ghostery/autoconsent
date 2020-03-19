@@ -1,7 +1,7 @@
 import Tab from './web/tab';
 import handleContentMessage from './web/content';
 import { rules } from './index';
-import { Browser } from './types';
+import { Browser, MessageSender } from './types';
 
 export * from './index';
 export {
@@ -74,10 +74,8 @@ class TabConsent {
 export default class AutoConsent {
   consentFrames: Map<number, any> = new Map()
   tabCmps: Map<number, TabConsent> = new Map()
-  sendContentMessage: () => any
-  browser: Browser
 
-  constructor(sendContentMessage) {
+  constructor(protected browser: Browser, protected sendContentMessage: MessageSender) {
     this.sendContentMessage = sendContentMessage;
   }
 
@@ -85,7 +83,8 @@ export default class AutoConsent {
     return new Tab(tabId,
       url,
       this.consentFrames.get(tabId),
-      this.sendContentMessage);
+      this.sendContentMessage,
+      this.browser);
   }
 
   async checkTab(tabId: number) {

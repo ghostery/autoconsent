@@ -1,6 +1,11 @@
 import { waitFor } from '../cmps/base';
+import { TabActor } from '../types';
 
-export default class Tab {
+export default class Tab implements TabActor {
+  page: any
+  url: any
+  frames: { [id: number]: any }
+
   constructor(page, url, frames) {
     this.page = page;
     this.url = url;
@@ -72,19 +77,22 @@ export default class Tab {
   async waitForThenClick(selector, timeout, frameId = 0) {
     await this.waitForElement(selector, timeout, frameId);
     await this.clickElement(selector, frameId);
+    return true;
   }
 
-  async hideElements(selectors, frameId = 0) {
+  async hideElements(selectors: string[], frameId = 0) {
+    return Promise.resolve(false)
   }
 
   async sendKeyEvent(selector, eventType, keyCode, charCode = 0, frameId = 0) {
+    return Promise.resolve(false)
   }
 
   async goto(url) {
     return this.page.goto(url);
   }
 
-  wait(ms) {
+  wait(ms): Promise<true> {
     return new Promise((resolve) => {
       setTimeout(() => resolve(true), ms);
     });

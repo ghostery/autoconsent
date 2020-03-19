@@ -18,7 +18,7 @@ function waitForTabLoaded(id) {
     tabLoaded[id] = resolve;
   });
 }
-window.consent = new AutoConsent(browser.tabs.sendMessage);
+window.consent = new AutoConsent(browser, browser.tabs.sendMessage);
 
 async function test(url) {
   window.testRunning = true;
