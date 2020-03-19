@@ -18,6 +18,7 @@ export default class AppGdpr2 extends AutoConsentBase {
     await tab.clickElement('button[class*="-intro_rejectAll"]');
     await tab.clickElements('span[class*="-switch_isSelected"]');
     await tab.clickElement('button[class*="details_save"]');
+    return true;
   }
 
   async optIn(tab) {

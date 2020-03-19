@@ -2,7 +2,7 @@
 
 import { AutoCMP, TabActor } from "../types";
 
-export async function waitFor(predicate: () => Promise<boolean>, maxTimes: number, interval: number): Promise<boolean> {
+export async function waitFor(predicate: () => Promise<boolean> | boolean, maxTimes: number, interval: number): Promise<boolean> {
   let result = false;
   try {
     result = await predicate();

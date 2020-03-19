@@ -55,6 +55,7 @@ export default class TrustArc extends AutoConsentBase {
 
   async optOut(tab) {
     await tab.hideElements(['.truste_overlay', '.truste_box_overlay', '.trustarc-banner', '.truste-banner']);
+    return true;
   }
 
   async optIn(tab) {
@@ -68,10 +69,12 @@ export default class TrustArc extends AutoConsentBase {
     await tab.clickElement('.submit', frameId);
     await waitFor(() => tab.elementExists('#gwt-debug-close_id', frameId), 300, 1000);
     await tab.clickElement('#gwt-debug-close_id', frameId);
+    return true;
   }
 
   async openCmp(tab) {
     await tab.eval('truste.eu.clickListener()');
+    return true;
   }
 
   async test() {

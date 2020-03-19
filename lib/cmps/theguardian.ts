@@ -5,7 +5,7 @@ export default class TheGuardian extends AutoConsentBase {
     super('theguardian');
   }
 
-  detectCmp(tab) {
+  async detectCmp(tab) {
     return new URL(tab.url).hostname.endsWith('theguardian.com');
   }
 

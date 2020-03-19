@@ -2,6 +2,8 @@ import { waitFor } from '../cmps/base';
 import { TabActor } from '../types';
 
 export default class Tab implements TabActor {
+  // puppeteer doesn't have tab IDs
+  id = 1
   page: any
   url: any
   frames: { [id: number]: any }

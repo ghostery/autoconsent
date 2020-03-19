@@ -34,6 +34,7 @@ export default class Future extends AutoConsentBase {
     await tab.clickElement('#mainMoreInfo', tab.frame.id);
     await tab.clickElement('.cmp-btn-acceptall', tab.frame.id);
     await tab.clickElement('.cmp-btn-acceptall', tab.frame.id);
+    return true;
   }
 
   async optOut(tab) {
@@ -44,5 +45,6 @@ export default class Future extends AutoConsentBase {
     await tab.clickElement('#mainMoreInfo', tab.frame.id);
     await tab.clickElement('.cmp-btn-rejectall', tab.frame.id);
     await tab.clickElement('#confirmLeave', tab.frame.id);
+    return true;
   }
 }
