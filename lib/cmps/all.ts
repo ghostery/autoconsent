@@ -28,5 +28,6 @@ const rules = [
 genericRules.forEach((rule) => {
   rules.push(new AutoConsent(rule));
 });
+// const rules = [];
 
 export default rules;

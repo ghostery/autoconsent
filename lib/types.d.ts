@@ -13,6 +13,11 @@ export type Browser = {
 }
 
 export interface TabActor {
+  frame?: {
+    id: number
+    url: string
+  }
+  url: string
   elementExists(selector: string, frameId?: number): Promise<boolean>
   clickElement(selector: string, frameId?: number): Promise<boolean>
   clickElements(selector: string, frameId?: number): Promise<boolean>
@@ -28,3 +33,14 @@ export interface TabActor {
 }
 
 export type MessageSender<ResultType = any> = (tabId: number, message: any, options?: { frameId: number }) => Promise<ResultType>;
+
+export interface AutoCMP {
+  name: string
+  detectCmp(tab: TabActor): Promise<boolean>
+  detectPopup(tab: TabActor): Promise<boolean>
+  optOut(tab:TabActor): Promise<boolean>
+  optIn(tab: TabActor): Promise<boolean>
+  openCmp(tab: TabActor): Promise<boolean>
+  test(tab: TabActor): Promise<boolean>
+  detectFrame(tab: TabActor, frame: { url: string }): boolean
+}
