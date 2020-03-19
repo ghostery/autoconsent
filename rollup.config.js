@@ -43,5 +43,8 @@ export default [{
   output: [{
     file: './test/content.bundle.js',
     format: 'iife',
-  }]
+  }],
+  plugins: [
+    typescript(),
+  ]
 }];

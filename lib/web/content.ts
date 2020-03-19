@@ -1,5 +1,5 @@
 
-export default function handleMessage(message, debug = false) {
+export default function handleMessage(message: any, debug = false) {
   if (message.type === 'click') {
     const elem = document.querySelectorAll(message.selector);
     debug && console.log('[click]', message.selector, elem);
@@ -58,22 +58,6 @@ export default function handleMessage(message, debug = false) {
     css.appendChild(document.createTextNode(rule));
     parent.appendChild(css);
     return Promise.resolve(hidden);
-  } else if (message.type === 'keyevent') {
-    const { selector, eventType, keyCode, charCode } = message;
-    const elem = document.querySelector(selector);
-    const event = document.createEvent('KeyboardEvent');
-    event.initKeyEvent(eventType,
-                   true,
-                   true,
-                   null,
-                   false,
-                   false,
-                   false,
-                   false,
-                   keyCode,
-                   charCode);
-    elem.dispatchEvent(event);
-    return Promise.resolve(true);
   }
   return Promise.resolve(null);
 }
