@@ -1,5 +1,5 @@
 import { waitFor } from '../cmps/base';
-import { TabActor } from '../types';
+import { TabActor, FindResult } from '../types';
 
 export default class Tab implements TabActor {
   // puppeteer doesn't have tab IDs
@@ -13,6 +13,7 @@ export default class Tab implements TabActor {
     this.url = url;
     this.frames = frames;
   }
+
 
   async elementExists(selector, frameId = 0) {
     try {
@@ -98,5 +99,9 @@ export default class Tab implements TabActor {
     return new Promise((resolve) => {
       setTimeout(() => resolve(true), ms);
     });
+  }
+ 
+  find(options: any, multiple?: boolean): Promise<any> {
+    throw new Error("Method not implemented.");
   }
 }

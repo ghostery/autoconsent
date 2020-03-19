@@ -31,6 +31,10 @@ export interface TabActor {
   sendKeyEvent(selector: string, eventType, keyCode, charCode?: number, frameId?: number): Promise<boolean>
   goto(url: string): Promise<void>
   wait(ms: number): Promise<true>
+
+  // Consent-O-Matic methods
+  find(options, multiple?: false): Promise<FindResult>
+  find(options, multiple: true): Promise<FindResult[]>
 }
 
 export type MessageSender<ResultType = any> = (tabId: number, message: any, options?: { frameId: number }) => Promise<ResultType>;
@@ -44,4 +48,11 @@ export interface AutoCMP {
   openCmp(tab: TabActor): Promise<boolean>
   test(tab: TabActor): Promise<boolean>
   detectFrame(tab: TabActor, frame: { url: string }): boolean
+}
+
+type FindResult = {
+  parent?: any
+  target?: {
+    checked: boolean
+  }
 }

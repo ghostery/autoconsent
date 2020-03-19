@@ -1,5 +1,5 @@
 import { waitFor } from "../cmps/base";
-import { TabActor, MessageSender, Browser } from "../types";
+import { TabActor, MessageSender, Browser, FindResult } from "../types";
 
 export default class TabActions implements TabActor {
   id: number;
@@ -147,6 +147,14 @@ export default class TabActions implements TabActor {
   wait(ms): Promise<true> {
     return new Promise(resolve => {
       setTimeout(() => resolve(true), ms);
+    });
+  }
+
+  find(options: any, multiple: boolean = false) {
+    return this.sendContentMessage(this.id, {
+      type: 'find',
+      options,
+      multiple,
     });
   }
 }

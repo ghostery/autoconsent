@@ -1,3 +1,4 @@
+import Tools from './consentomatic';
 
 export default function handleMessage(message: any, debug = false) {
   if (message.type === 'click') {
@@ -58,6 +59,21 @@ export default function handleMessage(message: any, debug = false) {
     css.appendChild(document.createTextNode(rule));
     parent.appendChild(css);
     return Promise.resolve(hidden);
+  } else if (message.type === 'find') {
+    const result = Tools.find(message.options, message.multiple);
+
+    function createSerialisableResult(result) {
+      return {
+        parent: !!result.parent,
+        target: !!result.target && {
+          checked: result.target.checked,
+        }
+      }
+    }
+    if (message.multiple) {
+      return Promise.resolve(result.map(createSerialisableResult))
+    }
+    return Promise.resolve(createSerialisableResult(result));
   }
   return Promise.resolve(null);
 }
