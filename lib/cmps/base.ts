@@ -21,7 +21,8 @@ export async function waitFor(predicate: () => Promise<boolean> | boolean, maxTi
 
 type AutoConsentRule = any
 
-type AutoConsentConfig = {
+export type AutoConsentConfig = {
+  name?: string
   popupSelector?: string
   detectCmp?: AutoConsentRule[]
   detectPopup?: AutoConsentRule[]
@@ -130,7 +131,7 @@ async function evaluateRule(rule: any, tab: TabActor) {
 
 export class AutoConsent extends AutoConsentBase {
 
-  constructor(config) {
+  constructor(config: AutoConsentConfig) {
     super(config.name, config);
   }
 

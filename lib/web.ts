@@ -1,7 +1,8 @@
 import Tab from './web/tab';
 import handleContentMessage from './web/content';
-import { rules } from './index';
-import { Browser, MessageSender } from './types';
+import { rules, createAutoCMP } from './index';
+import { Browser, MessageSender, AutoCMP, TabActor } from './types';
+import { AutoConsentConfig } from './cmps/base';
 
 export * from './index';
 export {
@@ -9,29 +10,11 @@ export {
   handleContentMessage,
 }
 
-async function detectDialog(tab, retries) {
-  const detect = await Promise.all(rules.map(r => r.detectCmp(tab)));
-  const found = detect.findIndex(r => r);
-  if (found === -1 && retries > 0) {
-    return new Promise((resolve) => {
-      setTimeout(async () => {
-        const result = detectDialog(tab, retries - 1);
-        resolve(result);
-      }, 1000);
-    });
-  }
-  return found > -1 ? rules[found] : null;
-}
-
 class TabConsent {
-  tab: any
-  url: string
-  checked: Promise<any>
-  rule: any
+  checked: Promise<AutoCMP>
+  rule: AutoCMP
 
-  constructor(tab, url, ruleCheckPromise) {
-    this.tab = tab;
-    this.url = url;
+  constructor(public tab: TabActor, public url: URL, ruleCheckPromise: Promise<AutoCMP>) {
     this.checked = ruleCheckPromise;
     ruleCheckPromise.then(rule => this.rule = rule);
   }
@@ -74,9 +57,15 @@ class TabConsent {
 export default class AutoConsent {
   consentFrames: Map<number, any> = new Map()
   tabCmps: Map<number, TabConsent> = new Map()
+  rules: AutoCMP[]
 
   constructor(protected browser: Browser, protected sendContentMessage: MessageSender) {
     this.sendContentMessage = sendContentMessage;
+    this.rules = [...rules]
+  }
+
+  addCMP(config: AutoConsentConfig) {
+    this.rules.push(createAutoCMP(config));
   }
 
   createTab(tabId: number, url: string) {
@@ -90,9 +79,9 @@ export default class AutoConsent {
   async checkTab(tabId: number) {
     const tabInfo = await this.browser.tabs.get(tabId);
     const pageUrl = new URL(tabInfo.url);
-    if (!this.tabCmps.has(tabId) || this.tabCmps.get(tabId).url !== pageUrl.href) {
+    if (!this.tabCmps.has(tabId) || this.tabCmps.get(tabId).url.href !== pageUrl.href) {
       const tab = this.createTab(tabId, pageUrl.href);
-      const consent = new TabConsent(tab, pageUrl, detectDialog(tab, 5));
+      const consent = new TabConsent(tab, pageUrl, this.detectDialog(tab, 5));
       this.tabCmps.set(tabId, consent);
       // check tabs
       consent.checked.then((rule) => {
@@ -137,6 +126,20 @@ export default class AutoConsent {
     } catch (e) {
       console.error(e);
     }
+  }
+
+  async detectDialog(tab: TabActor, retries: number): Promise<AutoCMP> {
+    const detect = await Promise.all(this.rules.map(r => r.detectCmp(tab)));
+    const found = detect.findIndex(r => r);
+    if (found === -1 && retries > 0) {
+      return new Promise((resolve) => {
+        setTimeout(async () => {
+          const result = this.detectDialog(tab, retries - 1);
+          resolve(result);
+        }, 1000);
+      });
+    }
+    return found > -1 ? this.rules[found] : null;
   }
 
 }
