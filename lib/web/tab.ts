@@ -151,18 +151,25 @@ export default class TabActions implements TabActor {
   }
 
   matches(matcherConfig: any) {
-    return this.sendContentMessage(this.id, {
-      type: 'matches',
-      config: matcherConfig,
-    }, { frameId: 0 });
+    return this.sendContentMessage(
+      this.id,
+      {
+        type: "matches",
+        config: matcherConfig
+      },
+      { frameId: 0 }
+    );
   }
 
   executeAction(config: any, param?: any): Promise<boolean> {
-    return this.sendContentMessage(this.id, {
-      type: 'executeAction',
-      config,
-      param,
-    }, { frameId: 0 });
+    return this.sendContentMessage(
+      this.id,
+      {
+        type: "executeAction",
+        config,
+        param
+      },
+      { frameId: 0 }
+    );
   }
-
 }

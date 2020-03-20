@@ -423,19 +423,19 @@ async function closeAction(config) {
 }
 
 async function evalAction(config): Promise<boolean> {
-  console.log('eval!', config.code);
-  return new Promise((resolve) => {
+  console.log("eval!", config.code);
+  return new Promise(resolve => {
     try {
       if (config.async) {
         window.eval(config.code);
         setTimeout(() => {
-          resolve(window.eval('window.__consentCheckResult'))
-        }, config.timeout || 250)
+          resolve(window.eval("window.__consentCheckResult"));
+        }, config.timeout || 250);
       } else {
         resolve(window.eval(config.code));
       }
-    } catch(e) {
-      console.warn('eval error', e, config.code);
+    } catch (e) {
+      console.warn("eval error", e, config.code);
       resolve(false);
     }
   });
