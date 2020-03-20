@@ -1,4 +1,4 @@
-export default class Tools {
+export class Tools {
   static base = null;
 
   static setBase(base) {
@@ -189,6 +189,59 @@ export default class Tools {
       }
 
       return results[0];
+    }
+  }
+}
+
+export async function executeAction(config, param?): Promise<void> {
+  switch(config.type) {
+    case "click": return clickAction(config);
+    case "list": return listAction(config, param);
+    case "consent": return consentAction(config);
+    case "ifcss": return ifCssAction(config);
+    case "waitcss": return waitCssAction(config);
+    case "foreach": return forEachAction(config);
+    case "hide": return hideAction(config);
+    case "slide": return slideAction(config);
+    case "close": return closeAction(config);
+    case "wait": return waitAction(config);
+    default: throw "Unknown action type: "+config.type;
+  }
+}
+
+const STEP_TIMEOUT = 250;
+
+function waitTimeout(timeout: number): Promise<void> {
+  return new Promise((resolve)=>{
+      setTimeout(()=>{resolve();}, timeout);
+  });
+}
+
+async function clickAction(config) {
+  const result = Tools.find(config);
+  if (result.target != null) {
+    result.target.click();
+  }
+  return waitTimeout(STEP_TIMEOUT);
+}
+
+async function listAction(config, param) {
+  for(let action of config.actions) {
+    await executeAction(action, param);
+  }
+}
+
+async function consentAction(config, consentTypes) {
+  for (const consentConfig of config.consents) {
+    const shouldEnable = consentTypes.indexOf(consentConfig.type) !== -1;
+    if (consentConfig.enabledMatcher && consentConfig.toggleAction) {
+      
+    } else {
+      if (shouldEnable) {
+        await executeAction(consentConfig.trueAction);
+      } else {
+        await executeAction(consentConfig.falseAction);
+      }
     }
   }
 }

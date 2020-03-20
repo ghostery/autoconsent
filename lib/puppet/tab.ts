@@ -14,7 +14,6 @@ export default class Tab implements TabActor {
     this.frames = frames;
   }
 
-
   async elementExists(selector, frameId = 0) {
     try {
       const elements = await this.frames[frameId].$$(selector)
@@ -102,6 +101,10 @@ export default class Tab implements TabActor {
   }
  
   find(options: any, multiple?: boolean): Promise<any> {
+    throw new Error("Method not implemented.");
+  }
+
+  executeAction(config: any, param?: any): Promise<boolean> {
     throw new Error("Method not implemented.");
   }
 }

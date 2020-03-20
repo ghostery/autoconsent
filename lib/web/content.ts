@@ -1,4 +1,4 @@
-import Tools from './consentomatic';
+import { Tools } from './consentomatic';
 
 export default function handleMessage(message: any, debug = false) {
   if (message.type === 'click') {
@@ -74,6 +74,8 @@ export default function handleMessage(message: any, debug = false) {
       return Promise.resolve(result.map(createSerialisableResult))
     }
     return Promise.resolve(createSerialisableResult(result));
+  } else if (message.type === 'executeAction') {
+    console.log('xxx execute', message.config, message.param);
   }
   return Promise.resolve(null);
 }

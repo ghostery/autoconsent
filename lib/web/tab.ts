@@ -155,6 +155,16 @@ export default class TabActions implements TabActor {
       type: 'find',
       options,
       multiple,
-    });
+    }, { frameId: 0 });
   }
+
+  executeAction(config: any, param?: any): Promise<boolean> {
+    console.log('send action', config);
+    return this.sendContentMessage(this.id, {
+      type: 'executeAction',
+      config,
+      param,
+    }, { frameId: 0 });
+  }
+
 }
