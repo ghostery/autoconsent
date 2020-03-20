@@ -37,6 +37,7 @@ export default class AutoConsentBase implements AutoCMP {
 
   name: string
   config: AutoConsentConfig
+  hasSelfTest = true
 
   constructor(name: string, config?: AutoConsentConfig) {
     this.name = name;

@@ -202,35 +202,33 @@ export function matches(config) {
   }
 }
 
-export async function executeAction(config, param?): Promise<void> {
-  try {
-    switch (config.type) {
-      case "click":
-        return clickAction(config);
-      case "list":
-        return listAction(config, param);
-      case "consent":
-        return consentAction(config, param);
-      case "ifcss":
-        return ifCssAction(config, param);
-      case "waitcss":
-        return waitCssAction(config);
-      case "foreach":
-        return forEachAction(config, param);
-      case "hide":
-        return hideAction(config);
-      case "slide":
-        return slideAction(config);
-      case "close":
-        return closeAction(config);
-      case "wait":
-        return waitAction(config);
-      default:
-        throw "Unknown action type: " + config.type;
-    }
-    } catch (e) {
-      console.error(e);
-    }
+export async function executeAction(config, param?): Promise<boolean | void> {
+  switch (config.type) {
+    case "click":
+      return clickAction(config);
+    case "list":
+      return listAction(config, param);
+    case "consent":
+      return consentAction(config, param);
+    case "ifcss":
+      return ifCssAction(config, param);
+    case "waitcss":
+      return waitCssAction(config);
+    case "foreach":
+      return forEachAction(config, param);
+    case "hide":
+      return hideAction(config);
+    case "slide":
+      return slideAction(config);
+    case "close":
+      return closeAction(config);
+    case "wait":
+      return waitAction(config);
+    case "eval":
+      return evalAction(config);
+    default:
+      throw "Unknown action type: " + config.type;
+  }
 }
 
 const STEP_TIMEOUT = 0;
@@ -416,11 +414,15 @@ async function slideAction(config) {
   }
 }
 
-
 async function waitAction(config) {
   await waitTimeout(config.waitTime);
 }
 
 async function closeAction(config) {
   window.close();
+}
+
+async function evalAction(config) {
+  console.log('eval!', config.code);
+  return window.eval(config.code);
 }

@@ -41,6 +41,7 @@ export type MessageSender<ResultType = any> = (tabId: number, message: any, opti
 
 export interface AutoCMP {
   name: string
+  hasSelfTest: boolean
   detectCmp(tab: TabActor): Promise<boolean>
   detectPopup(tab: TabActor): Promise<boolean>
   optOut(tab:TabActor): Promise<boolean>

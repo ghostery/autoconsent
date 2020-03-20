@@ -1,6 +1,6 @@
 import { AutoCMP, TabActor } from "../types";
 
-type Method = 'HIDE_CMP' | 'OPEN_OPTIONS' | 'HIDE_CMP' | 'DO_CONSENT' | 'SAVE_CONSENT';
+type Method = 'HIDE_CMP' | 'OPEN_OPTIONS' | 'HIDE_CMP' | 'DO_CONSENT' | 'SAVE_CONSENT' | 'TEST_CONSENT';
 type DetectorConfig = {
   presentMatcher: {};
   showingMatcher: {};
@@ -20,6 +20,7 @@ export type ConsentOMaticConfig = {
 export class ConsentOMaticCMP implements AutoCMP {
 
   methods = new Map<Method, {}>()
+  hasSelfTest: boolean
 
   constructor(public name: string, public config: ConsentOMaticConfig) {
     config.methods.forEach((methodConfig) => {
@@ -27,6 +28,7 @@ export class ConsentOMaticCMP implements AutoCMP {
         this.methods.set(methodConfig.name, methodConfig.action);
       }
     });
+    this.hasSelfTest = this.methods.has('TEST_CONSENT');
   }
 
   async detectCmp(tab: TabActor): Promise<boolean> {
@@ -63,8 +65,9 @@ export class ConsentOMaticCMP implements AutoCMP {
   openCmp(tab: TabActor): Promise<boolean> {
     throw new Error("Method not implemented.");
   }
+
   test(tab: TabActor): Promise<boolean> {
-    return Promise.resolve(true);
+    return this.executeAction(tab, 'TEST_CONSENT')
   }
   detectFrame(tab: TabActor, frame: { url: string }): boolean {
     throw new Error("Method not implemented.");

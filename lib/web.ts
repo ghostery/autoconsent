@@ -3,6 +3,7 @@ import handleContentMessage from './web/content';
 import { rules, createAutoCMP } from './index';
 import { Browser, MessageSender, AutoCMP, TabActor } from './types';
 import { AutoConsentConfig } from './cmps/base';
+import { ConsentOMaticCMP, ConsentOMaticConfig } from './consentomatic/index';
 
 export * from './index';
 export {
@@ -41,7 +42,7 @@ class TabConsent {
   }
 
   hasTest() {
-    return !!this.rule.test
+    return !!this.rule.hasSelfTest
   }
 
   async testOptOutWorked() {
@@ -61,11 +62,15 @@ export default class AutoConsent {
 
   constructor(protected browser: Browser, protected sendContentMessage: MessageSender) {
     this.sendContentMessage = sendContentMessage;
-    this.rules = [...rules]
+    this.rules = []
   }
 
   addCMP(config: AutoConsentConfig) {
     this.rules.push(createAutoCMP(config));
+  }
+
+  addConsentomaticCMP(name: string, config: ConsentOMaticConfig) {
+    this.rules.push(new ConsentOMaticCMP(`com_${name}`, config));
   }
 
   createTab(tabId: number, url: string) {

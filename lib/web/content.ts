@@ -61,11 +61,11 @@ export default function handleMessage(message: any, debug = false) {
     return Promise.resolve(hidden);
   } else if (message.type === 'matches') {
     const matched = matches(message.config)
-    console.log('xxx matches', message.config, matched);
     return Promise.resolve(matched);
   } else if (message.type === 'executeAction') {
-    console.log('xxx execute', message.config, message.param);
-    return executeAction(message.config, message.param).then(() => true);
+    return executeAction(message.config, message.param).then((result) => {
+      return result !== undefined ? result : true
+    });
   }
   return Promise.resolve(null);
 }
