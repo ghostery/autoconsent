@@ -20,6 +20,17 @@ function waitForTabLoaded(id) {
 }
 window.consent = new AutoConsent(browser, browser.tabs.sendMessage);
 
+fetch('/rules/rules.json').then(res => res.json())
+.then(rules => {
+  Object.keys(rules.consentomatic).forEach((name) => {
+    window.consent.addConsentomaticCMP(name, rules.consentomatic[name])
+  })
+  rules.autoconsent.forEach((rule) => {
+    window.consent.addCMP(rule);
+  })
+});
+// window.update = () => fetch('/rules.json').then(res => res.json()).then(rules => rules.forEach((rule) => window.consent.addCMP(rule)))
+
 async function test(url) {
   window.testRunning = true;
   const tabId = (await browser.tabs.create({
