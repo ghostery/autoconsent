@@ -422,7 +422,16 @@ async function closeAction(config) {
   window.close();
 }
 
-async function evalAction(config) {
+async function evalAction(config): Promise<boolean> {
   console.log('eval!', config.code);
-  return window.eval(config.code);
+  return new Promise((resolve) => {
+    if (config.async) {
+      window.eval(config.code);
+      setTimeout(() => {
+        resolve(window.eval('window.__consentCheckResult'))
+      }, config.timeout || 250)
+    } else {
+      resolve(window.eval(config.code));
+    }
+  });
 }
