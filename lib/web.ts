@@ -62,7 +62,7 @@ export default class AutoConsent {
 
   constructor(protected browser: Browser, protected sendContentMessage: MessageSender) {
     this.sendContentMessage = sendContentMessage;
-    this.rules = []
+    this.rules = [...rules];
   }
 
   addCMP(config: AutoConsentConfig) {
