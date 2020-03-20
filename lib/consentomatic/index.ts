@@ -1,5 +1,4 @@
 import { AutoCMP, TabActor } from "../types";
-import { createMatcher, Matcher } from "./matcher";
 
 type Method = 'HIDE_CMP' | 'OPEN_OPTIONS' | 'HIDE_CMP' | 'DO_CONSENT' | 'SAVE_CONSENT';
 type DetectorConfig = {
@@ -19,17 +18,10 @@ export type ConsentOMaticConfig = {
 };
 
 export class ConsentOMaticCMP implements AutoCMP {
-  presentMatchers: Matcher[];
-  showingMatchers: Matcher[];
+
   methods = new Map<Method, {}>()
 
   constructor(public name: string, public config: ConsentOMaticConfig) {
-    this.presentMatchers = this.config.detectors.map(detectorConfig =>
-      createMatcher(detectorConfig.presentMatcher)
-    );
-    this.showingMatchers = this.config.detectors.map(detectorConfig =>
-      createMatcher(detectorConfig.showingMatcher)
-    );
     config.methods.forEach((methodConfig) => {
       if (methodConfig.action) {
         this.methods.set(methodConfig.name, methodConfig.action);
@@ -38,17 +30,15 @@ export class ConsentOMaticCMP implements AutoCMP {
   }
 
   async detectCmp(tab: TabActor): Promise<boolean> {
-    const detections = await Promise.all(
-      this.presentMatchers.map(matcher => matcher.matches(tab))
-    );
-    return detections.some(matched => matched);
+    return (await Promise.all(
+      this.config.detectors.map(detectorConfig => tab.matches(detectorConfig.presentMatcher))
+    )).some(matched => matched);
   }
 
   async detectPopup(tab: TabActor): Promise<boolean> {
-    const detections = await Promise.all(
-      this.showingMatchers.map(matcher => matcher.matches(tab))
-    );
-    return detections.some(matched => matched);
+    return (await Promise.all(
+      this.config.detectors.map(detectorConfig => tab.matches(detectorConfig.showingMatcher))
+    )).some(matched => matched);
   }
 
   async executeAction(tab: TabActor, method: Method, param?) {
@@ -74,7 +64,7 @@ export class ConsentOMaticCMP implements AutoCMP {
     throw new Error("Method not implemented.");
   }
   test(tab: TabActor): Promise<boolean> {
-    throw new Error("Method not implemented.");
+    return Promise.resolve(true);
   }
   detectFrame(tab: TabActor, frame: { url: string }): boolean {
     throw new Error("Method not implemented.");

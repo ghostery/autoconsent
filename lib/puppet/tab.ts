@@ -100,7 +100,7 @@ export default class Tab implements TabActor {
     });
   }
  
-  find(options: any, multiple?: boolean): Promise<any> {
+  matches(options: any): Promise<boolean> {
     throw new Error("Method not implemented.");
   }
 

@@ -150,16 +150,14 @@ export default class TabActions implements TabActor {
     });
   }
 
-  find(options: any, multiple: boolean = false) {
+  matches(matcherConfig: any) {
     return this.sendContentMessage(this.id, {
-      type: 'find',
-      options,
-      multiple,
+      type: 'matches',
+      config: matcherConfig,
     }, { frameId: 0 });
   }
 
   executeAction(config: any, param?: any): Promise<boolean> {
-    console.log('send action', config);
     return this.sendContentMessage(this.id, {
       type: 'executeAction',
       config,

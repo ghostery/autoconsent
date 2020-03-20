@@ -33,9 +33,8 @@ export interface TabActor {
   wait(ms: number): Promise<true>
 
   // Consent-O-Matic methods
-  find(options, multiple?: false): Promise<FindResult>
-  find(options, multiple: true): Promise<FindResult[]>
-  executeAction(config, param?): Promise<boolean>
+  matches(matcherConfig): Promise<boolean>
+  executeAction(actionConfig, param?): Promise<boolean>
 }
 
 export type MessageSender<ResultType = any> = (tabId: number, message: any, options?: { frameId: number }) => Promise<ResultType>;
