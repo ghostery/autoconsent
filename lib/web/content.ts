@@ -1,4 +1,4 @@
-import { matches, executeAction } from "./consentomatic";
+import { matches, executeAction } from "./consentomatic/index";
 
 export default function handleMessage(message: any, debug = false) {
   if (message.type === "click") {
