@@ -64,9 +64,4 @@ Promise.all([buildAutoconsent, buildConsentOMatic]).then(() => {
     JSON.stringify(rules, undefined, "  "),
     () => console.log("Written rules.json")
   );
-  fs.writeFile(
-    path.join(__dirname, "rules.min.json"),
-    JSON.stringify(rules),
-    () => console.log("Written rules.min.json")
-  );
 });
