@@ -1,3 +1,4 @@
+import { ContentScriptMessage } from "./messages";
 
 type Tab = {
   url: string
@@ -28,7 +29,6 @@ export interface TabActor {
   waitForElement(selector: string, timeout: number, frameId?: number): Promise<boolean>
   waitForThenClick(selector: string, timeout: number, frameId?: number): Promise<boolean>
   hideElements(selectors: string[], frameId?: number): Promise<boolean>
-  sendKeyEvent(selector: string, eventType, keyCode, charCode?: number, frameId?: number): Promise<boolean>
   goto(url: string): Promise<void>
   wait(ms: number): Promise<true>
 
@@ -37,7 +37,7 @@ export interface TabActor {
   executeAction(actionConfig, param?): Promise<boolean>
 }
 
-export type MessageSender<ResultType = any> = (tabId: number, message: any, options?: { frameId: number }) => Promise<ResultType>;
+export type MessageSender<ResultType = any> = (tabId: number, message: ContentScriptMessage, options?: { frameId: number }) => Promise<ResultType>;
 
 export interface AutoCMP {
   name: string

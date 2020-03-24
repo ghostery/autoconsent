@@ -122,20 +122,6 @@ export default class TabActions implements TabActor {
     );
   }
 
-  async sendKeyEvent(selector, eventType, keyCode, charCode = 0, frameId = 0) {
-    return this.sendContentMessage(
-      this.id,
-      {
-        type: "keyevent",
-        selector,
-        eventType,
-        keyCode,
-        charCode
-      },
-      { frameId }
-    );
-  }
-
   async getBrowserTab() {
     return this.browser.tabs.get(this.id);
   }

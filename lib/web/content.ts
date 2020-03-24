@@ -1,6 +1,7 @@
 import { matches, executeAction } from "./consentomatic/index";
+import { ContentScriptMessage } from "../messages";
 
-export default function handleMessage(message: any, debug = false) {
+export default function handleMessage(message: ContentScriptMessage, debug = false) {
   if (message.type === "click") {
     const elem = document.querySelectorAll(message.selector);
     debug && console.log("[click]", message.selector, elem);
