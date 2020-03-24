@@ -3,7 +3,7 @@ import { ContentScriptMessage } from "../messages";
 
 export default function handleMessage(message: ContentScriptMessage, debug = false) {
   if (message.type === "click") {
-    const elem = document.querySelectorAll(message.selector);
+    const elem = document.querySelectorAll<HTMLElement>(message.selector);
     debug && console.log("[click]", message.selector, elem);
     if (elem.length > 0) {
       if (message.all === true) {
@@ -18,7 +18,7 @@ export default function handleMessage(message: ContentScriptMessage, debug = fal
     debug && console.log("[exists?]", message.selector, exists);
     return Promise.resolve(exists);
   } else if (message.type === "elemVisible") {
-    const elem = document.querySelectorAll(message.selector);
+    const elem = document.querySelectorAll<HTMLElement>(message.selector);
     const results = new Array(elem.length);
     elem.forEach((e, i) => {
       results[i] = e.offsetParent !== null;

@@ -1,9 +1,10 @@
-import { AutoConsent, AutoConsentConfig } from './base';
+import { AutoConsent } from './base';
 import TagCommander from './tagcommander';
 import TrustArc from './trustarc';
 import CookieBot from './cookiebot';
 import AppGdpr from './appgdpr';
 import Future from './future';
+import { AutoConsentCMPRule } from '../rules';
 
 const rules = [
   new TagCommander(),
@@ -13,7 +14,7 @@ const rules = [
   new Future(),
 ];
 
-export function createAutoCMP(config: AutoConsentConfig): AutoConsent {
+export function createAutoCMP(config: AutoConsentCMPRule): AutoConsent {
   return new AutoConsent(config);
 }
 

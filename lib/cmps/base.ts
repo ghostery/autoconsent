@@ -1,6 +1,7 @@
 /* eslint-disable no-restricted-syntax,no-await-in-loop,no-underscore-dangle */
 
 import { AutoCMP, TabActor } from "../types";
+import { AutoConsentCMPRule, AutoConsentRuleStep } from "../rules";
 
 export async function waitFor(predicate: () => Promise<boolean> | boolean, maxTimes: number, interval: number): Promise<boolean> {
   let result = false;
@@ -19,29 +20,15 @@ export async function waitFor(predicate: () => Promise<boolean> | boolean, maxTi
   return Promise.resolve(result);
 }
 
-type AutoConsentRule = any
 
-export type AutoConsentConfig = {
-  name?: string
-  popupSelector?: string
-  detectCmp?: AutoConsentRule[]
-  detectPopup?: AutoConsentRule[]
-  frame?: string
-  optOut?: AutoConsentRule[]
-  optIn?: AutoConsentRule[]
-  openCmp?: AutoConsentRule[]
-  test?: AutoConsentRule[]
-}
 
 export default class AutoConsentBase implements AutoCMP {
 
   name: string
-  config: AutoConsentConfig
   hasSelfTest = true
 
-  constructor(name: string, config?: AutoConsentConfig) {
+  constructor(name: string) {
     this.name = name;
-    this.config = config || {};
   }
 
   detectCmp(tab: TabActor): Promise<boolean>  {
@@ -49,9 +36,6 @@ export default class AutoConsentBase implements AutoCMP {
   }
 
   async detectPopup(tab: TabActor) {
-    if (this.config.popupSelector) {
-      return tab.elementExists(this.config.popupSelector);
-    }
     return false;
   }
 
@@ -78,7 +62,7 @@ export default class AutoConsentBase implements AutoCMP {
   }
 }
 
-async function evaluateRule(rule: any, tab: TabActor) {
+async function evaluateRule(rule: AutoConsentRuleStep, tab: TabActor) {
   if (rule.frame && !tab.frame) {
     await waitFor(() => Promise.resolve(!!tab.frame), 10, 500);
   }
@@ -132,16 +116,16 @@ async function evaluateRule(rule: any, tab: TabActor) {
 
 export class AutoConsent extends AutoConsentBase {
 
-  constructor(config: AutoConsentConfig) {
-    super(config.name, config);
+  constructor(public config: AutoConsentCMPRule) {
+    super(config.name);
   }
 
-  async _runRulesParallel(tab: TabActor, rules: AutoConsentRule[]): Promise<boolean> {
+  async _runRulesParallel(tab: TabActor, rules: AutoConsentRuleStep[]): Promise<boolean> {
     const detections = await Promise.all(rules.map(rule => evaluateRule(rule, tab)));
     return detections.some(r => !!r);
   }
 
-  async _runRulesSequentially(tab: TabActor, rules: AutoConsentRule[]): Promise<boolean> {
+  async _runRulesSequentially(tab: TabActor, rules: AutoConsentRuleStep[]): Promise<boolean> {
     for (const rule of rules) {
       const result = await evaluateRule(rule, tab);
       if (!result && !rule.optional) {

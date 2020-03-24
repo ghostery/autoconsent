@@ -2,8 +2,8 @@ import Tab from './web/tab';
 import handleContentMessage from './web/content';
 import { rules, createAutoCMP } from './index';
 import { Browser, MessageSender, AutoCMP, TabActor } from './types';
-import { AutoConsentConfig } from './cmps/base';
 import { ConsentOMaticCMP, ConsentOMaticConfig } from './consentomatic/index';
+import { AutoConsentCMPRule } from './rules';
 
 export * from './index';
 export {
@@ -65,7 +65,7 @@ export default class AutoConsent {
     this.rules = [...rules];
   }
 
-  addCMP(config: AutoConsentConfig) {
+  addCMP(config: AutoConsentCMPRule) {
     this.rules.push(createAutoCMP(config));
   }
 
