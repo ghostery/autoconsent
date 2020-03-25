@@ -9,7 +9,7 @@ This library is primarily used by the [cliqz browser](https://cliqz.com) in orde
 
 ### Rules
 
-The library's functionality is implemented a set of rules that define how to manage consent on
+The library's functionality is implemented as a set of rules that define how to manage consent on
 a subset of sites. These generally correspond to specific Consent Management Providers (CMPs)
 that are installed on multiple sites. Each CMP ruleset defines:
 
