@@ -8,21 +8,9 @@ const rules = {
   consentomatic: {}
 };
 
-function readFileJSON(filePath) {
-  return new Promise((resolve, reject) => {
-    fs.readFile(filePath, "utf-8", (err, data) => {
-      if (err) {
-        return reject(err);
-      }
-      let parsed = null;
-      try {
-        parsed = JSON.parse(data);
-      } catch (e) {
-        return reject(parsed);
-      }
-      resolve(parsed);
-    });
-  });
+async function readFileJSON(filePath) {
+  const data = await fs.promises.readFile(filePath, "utf-8")
+  return JSON.parse(data);
 }
 
 // merge rules from ./autoconsent into rules.autoconsent array
