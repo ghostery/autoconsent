@@ -27,14 +27,14 @@ export interface TabActor {
   getAttribute(selector: string, attribute: string, frameId?: number): Promise<string>
   eval(script: string, frameId?: number): Promise<boolean>
   waitForElement(selector: string, timeout: number, frameId?: number): Promise<boolean>
-  waitForThenClick(selector: string, timeout: number, frameId?: number): Promise<boolean>
+  waitForThenClick(selector: string, timeout?: number, frameId?: number): Promise<boolean>
   hideElements(selectors: string[], frameId?: number): Promise<boolean>
   goto(url: string): Promise<void>
   wait(ms: number): Promise<true>
 
   // Consent-O-Matic methods
-  matches(matcherConfig): Promise<boolean>
-  executeAction(actionConfig, param?): Promise<boolean>
+  matches(matcherConfig: any): Promise<boolean>
+  executeAction(actionConfig: any, param?: any): Promise<boolean>
 }
 
 export type MessageSender<ResultType = any> = (tabId: number, message: ContentScriptMessage, options?: { frameId: number }) => Promise<ResultType>;

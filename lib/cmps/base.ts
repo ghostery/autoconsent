@@ -66,7 +66,7 @@ async function evaluateRule(rule: AutoConsentRuleStep, tab: TabActor) {
   if (rule.frame && !tab.frame) {
     await waitFor(() => Promise.resolve(!!tab.frame), 10, 500);
   }
-  const frameId = rule.frame ? tab.frame.id : undefined;
+  const frameId = rule.frame ? tab.frame!!.id : undefined;
   const results = [];
   if (rule.exists) {
     results.push(tab.elementExists(rule.exists, frameId));
@@ -78,7 +78,7 @@ async function evaluateRule(rule: AutoConsentRuleStep, tab: TabActor) {
     results.push(new Promise(async (resolve) => {
       // catch eval error silently
       try {
-        resolve(await tab.eval(rule.eval, frameId));
+        resolve(await tab.eval(rule.eval!, frameId));
       } catch (e) {
         resolve(false);
       }
@@ -96,7 +96,7 @@ async function evaluateRule(rule: AutoConsentRuleStep, tab: TabActor) {
   }
   if (rule.waitForThenClick) {
     results.push(tab.waitForElement(rule.waitForThenClick, rule.timeout || 10000, frameId)
-      .then(() => tab.clickElement(rule.waitForThenClick, frameId)));
+      .then(() => tab.clickElement(rule.waitForThenClick!, frameId)));
   }
   if (rule.wait) {
     results.push(tab.wait(rule.wait));

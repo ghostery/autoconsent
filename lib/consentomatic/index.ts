@@ -56,7 +56,7 @@ export class ConsentOMaticCMP implements AutoCMP {
     ).some(matched => matched);
   }
 
-  async executeAction(tab: TabActor, method: Method, param?) {
+  async executeAction(tab: TabActor, method: Method, param?: any) {
     if (this.methods.has(method)) {
       return tab.executeAction(this.methods.get(method), param);
     }
@@ -64,7 +64,6 @@ export class ConsentOMaticCMP implements AutoCMP {
   }
 
   async optOut(tab: TabActor): Promise<boolean> {
-    console.log("xxx opt out");
     await this.executeAction(tab, "HIDE_CMP");
     await this.executeAction(tab, "OPEN_OPTIONS");
     await this.executeAction(tab, "HIDE_CMP");
@@ -83,6 +82,6 @@ export class ConsentOMaticCMP implements AutoCMP {
     return this.executeAction(tab, "TEST_CONSENT");
   }
   detectFrame(tab: TabActor, frame: { url: string }): boolean {
-    throw new Error("Method not implemented.");
+    return false;
   }
 }

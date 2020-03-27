@@ -8,13 +8,13 @@ export default class Tab implements TabActor {
   url: any
   frames: { [id: number]: any }
 
-  constructor(page, url, frames) {
+  constructor(page: any, url: string, frames: any) {
     this.page = page;
     this.url = url;
     this.frames = frames;
   }
 
-  async elementExists(selector, frameId = 0) {
+  async elementExists(selector: string, frameId = 0) {
     try {
       const elements = await this.frames[frameId].$$(selector)
       return elements.length > 0;
@@ -23,7 +23,7 @@ export default class Tab implements TabActor {
     }
   }
 
-  async clickElement(selector, frameId = 0) {
+  async clickElement(selector: string, frameId = 0) {
     if (await this.elementExists(selector, frameId)) {
       try {
         return await this.frames[frameId].click(selector);
@@ -34,49 +34,49 @@ export default class Tab implements TabActor {
     return false;
   }
 
-  async clickElements(selector, frameId = 0) {
+  async clickElements(selector: string, frameId = 0) {
     const elements = await this.frames[frameId].$$(selector);
     try {
-      await Promise.all(elements.map(elem => elem.click()));
+      await Promise.all(elements.map((elem: any) => elem.click()));
       return true;
     } catch (e) {
       return false;
     }
   }
 
-  async elementsAreVisible(selector, check, frameId = 0) {
+  async elementsAreVisible(selector: string, check: 'all' | 'any' | 'none', frameId = 0) {
     if (!await this.elementExists(selector, frameId)) {
       return false;
     }
-    const visible = await this.frames[frameId].$$eval(selector, nodes => nodes.map(n => n.offestParent !== null));
+    const visible: boolean[] = await this.frames[frameId].$$eval(selector, (nodes: any) => nodes.map((n: any) => n.offestParent !== null));
     if (visible.length === 0) {
       return false;
     } else if (check === 'any') {
-      return visible.some(r => r);
+      return visible.some((r => r);
     } else if (check === 'none') {
       return visible.every(r => !r);
     }
     return visible.every(r => r);
   }
 
-  async getAttribute(selector, attribute, frameId = 0) {
+  async getAttribute(selector: string, attribute: string, frameId = 0) {
     const elem = await this.frames[frameId].$(selector);
     if (elem) {
       return (await elem.getProperty(attribute)).jsonValue();
     }
   }
 
-  async eval(script, frameId = 0) {
+  async eval(script: string, frameId = 0) {
     return await this.frames[frameId].evaluate(script);
   }
 
-  async waitForElement(selector, timeout, frameId = 0) {
+  async waitForElement(selector: string, timeout: number, frameId = 0) {
     const interval = 200;
     const times = Math.ceil(timeout / interval);
     return waitFor(() => this.elementExists(selector, frameId), times, interval);
   }
 
-  async waitForThenClick(selector, timeout, frameId = 0) {
+  async waitForThenClick(selector: string, timeout: number, frameId = 0) {
     await this.waitForElement(selector, timeout, frameId);
     await this.clickElement(selector, frameId);
     return true;
@@ -86,15 +86,11 @@ export default class Tab implements TabActor {
     return Promise.resolve(false)
   }
 
-  async sendKeyEvent(selector, eventType, keyCode, charCode = 0, frameId = 0) {
-    return Promise.resolve(false)
-  }
-
-  async goto(url) {
+  async goto(url: string) {
     return this.page.goto(url);
   }
 
-  wait(ms): Promise<true> {
+  wait(ms: number): Promise<true> {
     return new Promise((resolve) => {
       setTimeout(() => resolve(true), ms);
     });
