@@ -71,11 +71,19 @@ export class ConsentOMaticCMP implements AutoCMP {
     await this.executeAction(tab, "SAVE_CONSENT");
     return true;
   }
-  optIn(tab: TabActor): Promise<boolean> {
-    throw new Error("Method not implemented.");
+
+  async optIn(tab: TabActor): Promise<boolean> {
+    await this.executeAction(tab, "HIDE_CMP");
+    await this.executeAction(tab, "OPEN_OPTIONS");
+    await this.executeAction(tab, "HIDE_CMP");
+    await this.executeAction(tab, "DO_CONSENT", ['D', 'A', 'B', 'E', 'F', 'X']);
+    await this.executeAction(tab, "SAVE_CONSENT");
+    return true;
   }
-  openCmp(tab: TabActor): Promise<boolean> {
-    throw new Error("Method not implemented.");
+  async openCmp(tab: TabActor): Promise<boolean> {
+    await this.executeAction(tab, "HIDE_CMP");
+    await this.executeAction(tab, "OPEN_OPTIONS");
+    return true;
   }
 
   test(tab: TabActor): Promise<boolean> {
