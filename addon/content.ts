@@ -1,10 +1,10 @@
-import handleContentMessage from '../lib/web/content';
+import handleContentMessage from "../lib/web/content";
 
 browser.runtime.onMessage.addListener((message) => {
-  return handleContentMessage(message);
-})
+  return handleContentMessage(message, true);
+});
 
 browser.runtime.sendMessage({
-  type: 'frame',
+  type: "frame",
   url: window.location.href,
 });
