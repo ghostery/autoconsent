@@ -22,6 +22,10 @@ function log(...msg) {
 
 loadRules();
 
+browser.webNavigation.onCompleted.addListener(consent.onFrame.bind(consent), {
+  url: [{ schemes: ['http', 'https'] }]
+});
+
 browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tabInfo) => {
   if (changeInfo.status === "complete" && !tabGuards.has(tabId)) {
     log('checking tab')
