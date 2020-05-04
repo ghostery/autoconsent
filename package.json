@@ -13,7 +13,8 @@
     "test": "web-ext run --source-dir ./test/ --firefox firefoxdeveloperedition --url about:debugging --no-reload",
     "fetch-fanboy-list": "wget https://www.fanboy.co.nz/fanboy-cookiemonster.txt",
     "fetch-site-list": "curl https://s3.amazonaws.com/cdn.cliqz.com/re-consent/supported_sites.txt > sites.txt",
-    "build-rules": "node rules/build.js && cp rules/rules.json addon/"
+    "build-rules": "node rules/build.js && cp rules/rules.json addon/",
+    "version": "node update_version.js && git add addon/manifest.json"
   },
   "author": "Sam Macbeth",
   "license": "MPL-2.0",
