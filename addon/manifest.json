@@ -20,5 +20,10 @@
     "tabs",
     "storage",
     "webNavigation"
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "autoconsent@cliqz.com"
+    }
+  }
 }
