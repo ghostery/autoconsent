@@ -1,19 +1,17 @@
 import { AutoConsent } from './base';
-import TagCommander from './tagcommander';
 import TrustArc from './trustarc';
 import CookieBot from './cookiebot';
-import AppGdpr from './appgdpr';
-import Future from './future';
-import PrivacyMgmt from './privacymgmt';
+import SourcePoint from './sourcepoint';
+import ContentManager from './consentmanager';
+import Evidon from './evidon';
 import { AutoConsentCMPRule } from '../rules';
 
 const rules = [
-  new TagCommander(),
   new TrustArc(),
   new CookieBot(),
-  new AppGdpr(),
-  new Future(),
-  new PrivacyMgmt(),
+  new SourcePoint(),
+  new ContentManager(),
+  new Evidon(),
 ];
 
 export function createAutoCMP(config: AutoConsentCMPRule): AutoConsent {

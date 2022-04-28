@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Autoconsent",
-  "version": "0.5.4",
+  "version": "2022.4.27",
   "background": {
     "scripts": [
       "background.bundle.js"
@@ -27,7 +27,12 @@
   ],
   "browser_specific_settings": {
     "gecko": {
-      "id": "autoconsent@cliqz.com"
+      "id": "autoconsent@sammacbeth.eu",
+      "update_url": "https://sammacbeth.eu/addons/update.json"
     }
+  },
+  "page_action": {
+    "browser_style": true,
+    "default_title": "Autoconsent"
   }
 }

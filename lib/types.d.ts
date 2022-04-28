@@ -19,7 +19,6 @@ export interface TabActor {
     url: string
   }
   id: number
-  url: string
   elementExists(selector: string, frameId?: number): Promise<boolean>
   clickElement(selector: string, frameId?: number): Promise<boolean>
   clickElements(selector: string, frameId?: number): Promise<boolean>
@@ -29,6 +28,7 @@ export interface TabActor {
   waitForElement(selector: string, timeout: number, frameId?: number): Promise<boolean>
   waitForThenClick(selector: string, timeout?: number, frameId?: number): Promise<boolean>
   hideElements(selectors: string[], frameId?: number): Promise<boolean>
+  undoHideElements(frameId?: number): Promise<boolean>
   goto(url: string): Promise<void>
   wait(ms: number): Promise<true>
 
@@ -42,6 +42,8 @@ export type MessageSender<ResultType = any> = (tabId: number, message: ContentSc
 export interface AutoCMP {
   name: string
   hasSelfTest: boolean
+  prehideSelectors?: string[]
+  isHidingRule?: boolean
   detectCmp(tab: TabActor): Promise<boolean>
   detectPopup(tab: TabActor): Promise<boolean>
   optOut(tab:TabActor): Promise<boolean>

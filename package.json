@@ -1,6 +1,6 @@
 {
-  "name": "@cliqz/autoconsent",
-  "version": "0.5.4",
+  "name": "@duckduckgo/autoconsent",
+  "version": "1.0.4",
   "description": "",
   "main": "dist/autoconsent.cjs.js",
   "module": "dist/autoconsent.esm.js",
@@ -8,19 +8,26 @@
     "lib": "lib"
   },
   "scripts": {
+    "clean": "rm -r dist lib/**/*.js lib/*.js",
+    "build": "tsc",
     "bundle": "rollup -c",
+    "watch": "rollup -c -w",
     "start": "web-ext run -s ./addon --firefox firefoxdeveloperedition",
-    "test": "jest",
+    "test": "playwright test",
+    "test:webkit": "playwright test --project webkit",
+    "test:firefox": "playwright test --project firefox",
     "fetch-fanboy-list": "wget https://www.fanboy.co.nz/fanboy-cookiemonster.txt",
     "fetch-site-list": "curl https://s3.amazonaws.com/cdn.cliqz.com/re-consent/supported_sites.txt > sites.txt",
     "build-rules": "node rules/build.js && cp rules/rules.json addon/",
     "version": "node update_version.js && git add addon/manifest.json",
-    "vendor-copy": "mkdir -p addon/vendor && cp node_modules/mocha/mocha.* addon/vendor/ && cp node_modules/chai/chai.js addon/vendor/"
+    "vendor-copy": "mkdir -p addon/vendor && cp node_modules/mocha/mocha.* addon/vendor/ && cp node_modules/chai/chai.js addon/vendor/",
+    "prepublish": "npm run build-rules && npm run build && npm run bundle"
   },
   "author": "Sam Macbeth",
   "license": "MPL-2.0",
   "dependencies": {},
   "devDependencies": {
+    "@playwright/test": "^1.17.1",
     "@rollup/plugin-typescript": "^4.0.0",
     "@types/chai": "^4.2.11",
     "@types/mocha": "^8.0.0",

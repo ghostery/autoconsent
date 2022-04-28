@@ -4,12 +4,7 @@ import { AutoCMP, TabActor } from "../types";
 import { AutoConsentCMPRule, AutoConsentRuleStep } from "../rules";
 
 export async function waitFor(predicate: () => Promise<boolean> | boolean, maxTimes: number, interval: number): Promise<boolean> {
-  let result = false;
-  try {
-    result = await predicate();
-  } catch (e) {
-    console.warn('error in waitFor predicate', e);
-  }
+  let result = await predicate();
   if (!result && maxTimes > 0) {
     return new Promise((resolve) => {
       setTimeout(async () => {
@@ -20,6 +15,14 @@ export async function waitFor(predicate: () => Promise<boolean> | boolean, maxTi
   return Promise.resolve(result);
 }
 
+
+export async function success(action: Promise<boolean>): Promise<boolean> {
+  const result = await action;
+  if (!result) {
+    throw new Error(`Action failed: ${action}`)
+  }
+  return result
+}
 
 
 export default class AutoConsentBase implements AutoCMP {
@@ -57,10 +60,7 @@ export default class AutoConsentBase implements AutoCMP {
 
   async test(tab: TabActor): Promise<boolean> {
     // try IAB by default
-    await tab.eval("__tcfapi('getTCData', 2, r => window.__rcsResult = r)");
-    return tab.eval(
-      "Object.values(window.__rcsResult.purpose.consents).every(c => !c)"
-    );
+    return Promise.resolve(true);
   }
 }
 
@@ -103,14 +103,14 @@ async function evaluateRule(rule: AutoConsentRuleStep, tab: TabActor) {
   if (rule.wait) {
     results.push(tab.wait(rule.wait));
   }
-  if (rule.url) {
-    results.push(Promise.resolve(tab.url.startsWith(rule.url)));
-  }
   if (rule.goto) {
     results.push(tab.goto(rule.goto));
   }
   if (rule.hide) {
     results.push(tab.hideElements(rule.hide, frameId));
+  }
+  if (rule.undoHide) {
+    results.push(tab.undoHideElements(frameId));
   }
   if (rule.waitForFrame) {
     results.push(waitFor(() => !!tab.frame, 40, 500))
@@ -125,9 +125,17 @@ export class AutoConsent extends AutoConsentBase {
     super(config.name);
   }
 
+  get prehideSelectors(): string[] {
+    return this.config.prehideSelectors;
+  }
+
+  get isHidingRule(): boolean {
+    return this.config.isHidingRule;
+  }
+
   async _runRulesParallel(tab: TabActor, rules: AutoConsentRuleStep[]): Promise<boolean> {
     const detections = await Promise.all(rules.map(rule => evaluateRule(rule, tab)));
-    return detections.some(r => !!r);
+    return detections.every(r => !!r);
   }
 
   async _runRulesSequentially(tab: TabActor, rules: AutoConsentRuleStep[]): Promise<boolean> {

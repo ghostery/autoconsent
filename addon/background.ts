@@ -1,13 +1,23 @@
 /* global browser */
+import { ConsentOMaticConfig } from "../lib/consentomatic";
+import { AutoConsentCMPRule } from "../lib/rules";
 import AutoConsent from "../lib/web";
+
+const config = {
+  autoOptOut: true,
+}
 
 const consent = new AutoConsent(<any>browser, browser.tabs.sendMessage);
 const tabGuards = new Set();
-let lastAction: { s: string; tab: number; t: number } = null;
+
+type RuleBundle = {
+  autoconsent: AutoConsentCMPRule[];
+  consentomatic: { [name: string]: ConsentOMaticConfig };
+}
 
 async function loadRules() {
   const res = await fetch("./rules.json");
-  const rules = await res.json();
+  const rules: RuleBundle = await res.json();
   Object.keys(rules.consentomatic).forEach((name) => {
     consent.addConsentomaticCMP(name, rules.consentomatic[name]);
   });
@@ -16,25 +26,21 @@ async function loadRules() {
   });
 }
 
-function log(...msg) {
+function log(...msg: any[]) {
   console.log("[autoconsent]", ...msg);
 }
 
 loadRules();
 
-browser.webNavigation.onCompleted.addListener(consent.onFrame.bind(consent), {
-  url: [{ schemes: ["http", "https"] }],
-});
-
-browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tabInfo) => {
-  if (changeInfo.status === "complete" && !tabGuards.has(tabId)) {
-    log("checking tab");
-    const url = new URL(tabInfo.url);
-    // ignore not http
-    if (!url.protocol.startsWith("http")) {
-      return;
-    }
-    const host = url.hostname;
+async function checkShouldShowPageAction({
+  tabId,
+  frameId,
+}: {
+  tabId: number;
+  frameId: number;
+}) {
+  if (!tabGuards.has(tabId) && frameId === 0) {
+    log("checking tab", tabId);
     try {
       tabGuards.add(tabId);
       const cmp = await consent.checkTab(tabId);
@@ -43,35 +49,103 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tabInfo) => {
         log("detected CMP:", cmp.getCMPName());
         if (await cmp.isPopupOpen()) {
           log("popup is open:", cmp.getCMPName());
-          // check for repeated action - did we already try to opt-in/out on this site in the
-          // last minute? If so, temporarily disable autoconsent on this site.
-          if (
-            lastAction &&
-            lastAction.s === host &&
-            tabId === lastAction.tab &&
-            Date.now() - lastAction.t < 60000
-          ) {
-            log(
-              "skip due to repeated action in last minute",
-              tabId,
-              cmp.getCMPName()
-            );
-            return;
-          }
-          log("doing opt out for ", cmp.getCMPName());
-          console.time("processing opt out");
-          await cmp.doOptOut();
-          console.timeEnd("processing opt out");
-        } else {
-          log("no popup detected", cmp.getCMPName());
+          showOptOutStatus(tabId, "available");
+          browser.pageAction.show(tabId);
+          return true;
+        } else if (cmp.hasTest() && (await cmp.testOptOutWorked())) {
+          showOptOutStatus(tabId, "success");
         }
+        return false;
+      } else {
+        log("no CMP found");
+        return false;
       }
-    } catch (e) {
-      console.warn(e);
     } finally {
       tabGuards.delete(tabId);
     }
   }
+}
+
+function showOptOutStatus(
+  tabId: number,
+  status: "success" | "complete" | "working" | "available"
+) {
+  let title = "Click to opt out";
+  let icon = "icons/cookie.png";
+  if (status === "success") {
+    title = "Opt out successful!";
+    icon = "icons/party.png";
+  } else if (status === "complete") {
+    title = "Opt out complete!";
+    icon = "icons/tick.png";
+  } else if (status === "working") {
+    title = "Processing...";
+    icon = "icons/cog.png";
+  }
+  browser.pageAction.setTitle({
+    tabId,
+    title,
+  });
+  browser.pageAction.setIcon({
+    tabId,
+    path: icon,
+  });
+}
+
+browser.webNavigation.onCommitted.addListener(
+  (details) => {
+    if (details.frameId === 0) {
+      consent.removeTab(details.tabId);
+    }
+  },
+  {
+    url: [{ schemes: ["http", "https"] }],
+  }
+);
+
+browser.runtime.onMessage.addListener(({ type }: { type: string }, sender: any) => {
+  consent.onFrame({
+    tabId: sender.tab.id,
+    frameId: sender.frameId,
+    url: sender.url,
+  });
+  if (type === "frame" && sender.frameId === 0) {
+    checkShouldShowPageAction({
+      tabId: sender.tab.id,
+      frameId: sender.frameId,
+    }).then((isShown) => {
+      if (isShown && config.autoOptOut) {
+        runOptOut(sender.tab.id);
+      }
+    });
+  }
+});
+
+async function runOptOut(tabId: number) {
+  try {
+    tabGuards.add(tabId);
+    const cmp = consent.tabCmps.get(tabId);
+    log("running opt out", tabId, cmp.getCMPName());
+    await cmp.doOptOut();
+    if (cmp.hasTest()) {
+      log(
+        "test opt out success",
+        cmp.getCMPName(),
+        await cmp.testOptOutWorked()
+      );
+      showOptOutStatus(tabId, "success");
+    } else {
+      log("no test for CMP", cmp.getCMPName());
+      showOptOutStatus(tabId, "complete");
+    }
+  } finally {
+    tabGuards.delete(tabId);
+  }
+}
+
+browser.pageAction.onClicked.addListener(async (tab) => {
+  const tabId = tab.id;
+  runOptOut(tabId);
 });
 
 browser.tabs.onRemoved.addListener((tabId) => {
