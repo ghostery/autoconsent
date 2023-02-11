@@ -35,7 +35,7 @@
     "mocha": "^8.0.1",
     "rollup": "^1.32.1",
     "typescript": "^3.8.3",
-    "web-ext": "^4.2.0",
+    "web-ext": "^7.5.0",
     "web-ext-types": "^3.2.1"
   }
 }
