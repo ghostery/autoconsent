@@ -141,7 +141,8 @@ export default class TrustArc extends AutoConsentBase {
   }
 
   async test() {
-    // TODO: find out how to test TrustArc
-    return true;
+    //Test JS variable to check the user's preference
+    //PrefCookie = undefined means no consent is set, PrefCookie = '0' means consent is set to required only 
+    return tab.eval("window && window.truste && window.truste.eu.bindMap.prefCookie === '0'");
   }
 }
